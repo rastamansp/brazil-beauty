@@ -60,8 +60,21 @@ export const ChatInterface = ({
   const [isSending, setIsSending] = useState(false);
   const [dynamicMessages, setDynamicMessages] = useState<JourneyMessage[]>([]);
 
+  // Mensagem inicial do bot quando não há journey selecionada
+  const initialBotMessage: JourneyMessage = {
+    id: 0,
+    sender: "mentor",
+    type: "text",
+    content: "Olá! Como posso ajudar você hoje?",
+    timestamp: new Date().toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }),
+  };
+
   // Separa mensagens estáticas (journey) das dinâmicas (chat real)
-  const staticMessages = journeyMessages || conversation.messages;
+  // Se não há journey, mostra apenas a mensagem inicial do bot
+  const staticMessages = journeyMessages || [initialBotMessage];
   const mentorName = headerName || conversation.participants.mentor.name;
   const mentorAvatar = headerAvatar || conversation.participants.mentor.avatar;
 
@@ -298,46 +311,46 @@ export const ChatInterface = ({
                       <div className="p-4 bg-white">
                         <div className="space-y-3 mb-4">
                           <div>
-                            <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                            <p className="text-sm text-gray-900 leading-relaxed mb-3">
                               {model.description}
                             </p>
                           </div>
                           
                           <div className="grid grid-cols-2 gap-3 text-xs">
                             <div>
-                              <span className="text-gray-500">Altura:</span>
-                              <span className="ml-2 font-semibold">{model.height}m</span>
+                              <span className="text-gray-700 font-medium">Altura:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.height}m</span>
                             </div>
                             <div>
-                              <span className="text-gray-500">Manequim:</span>
-                              <span className="ml-2 font-semibold">{model.size}</span>
+                              <span className="text-gray-700 font-medium">Manequim:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.size}</span>
                             </div>
                             <div>
-                              <span className="text-gray-500">Calçado:</span>
-                              <span className="ml-2 font-semibold">{model.shoes}</span>
+                              <span className="text-gray-700 font-medium">Calçado:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.shoes}</span>
                             </div>
                             <div>
-                              <span className="text-gray-500">Quadril:</span>
-                              <span className="ml-2 font-semibold">{model.hip} cm</span>
+                              <span className="text-gray-700 font-medium">Quadril:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.hip} cm</span>
                             </div>
                             <div>
-                              <span className="text-gray-500">Olhos:</span>
-                              <span className="ml-2 font-semibold">{model.eyeColor}</span>
+                              <span className="text-gray-700 font-medium">Olhos:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.eyeColor}</span>
                             </div>
                             <div>
-                              <span className="text-gray-500">Acompanha:</span>
-                              <span className="ml-2 font-semibold">{model.accompanies.join(", ")}</span>
+                              <span className="text-gray-700 font-medium">Acompanha:</span>
+                              <span className="ml-2 font-semibold text-gray-900">{model.accompanies.join(", ")}</span>
                             </div>
                           </div>
                           
                           <div className="pt-3 border-t border-gray-200">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-gray-500 text-sm">Taxa:</span>
+                              <span className="text-gray-700 font-medium text-sm">Taxa:</span>
                               <span className="font-bold text-lg text-gold">{model.fee}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-500 text-sm">Aceita Cartão:</span>
-                              <span className={`font-semibold ${model.acceptsCard ? 'text-primary' : 'text-gray-400'}`}>
+                              <span className="text-gray-700 font-medium text-sm">Aceita Cartão:</span>
+                              <span className={`font-semibold ${model.acceptsCard ? 'text-primary' : 'text-gray-600'}`}>
                                 {model.acceptsCard ? 'Sim' : 'Não'}
                               </span>
                             </div>
@@ -365,64 +378,116 @@ export const ChatInterface = ({
             );
           }
           
-          // Grid de múltiplos modelos
+          // Lista de múltiplos modelos - um card detalhado para cada
           if (message.type === "models" && "models" in message && message.models) {
             return (
-              <div key={message.id} className="mb-4 animate-fade-in">
-                <div className="max-w-[85%] mr-auto">
-                  <div className="bg-chat-received rounded-lg p-3 shadow-sm">
-                    <div className="grid grid-cols-2 gap-3">
-                      {message.models.map((model) => (
+              <div key={message.id} className="space-y-4">
+                {message.models.map((model, index) => (
+                  <div key={model.id} className="mb-4 animate-fade-in">
+                    <div className="max-w-[85%] mr-auto">
+                      <div className="bg-chat-received rounded-lg p-4 shadow-sm">
                         <Link
-                          key={model.id}
                           to={`/profile/${model.id}`}
-                          className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all hover:scale-[1.02]"
+                          className="block bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all"
                         >
-                          <div className="relative aspect-[3/4] overflow-hidden">
+                          {/* Foto principal */}
+                          <div className="relative aspect-[4/5] overflow-hidden">
                             <img
                               src={model.photos[0] || ""}
                               alt={model.name}
                               className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 p-2 text-white">
-                              <h3 className="text-sm font-bold mb-1 truncate">{model.name}</h3>
-                              <div className="flex items-center gap-1 text-xs opacity-90 mb-1">
+                            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                              <h3 className="text-xl font-bold mb-2">{model.name}</h3>
+                              <div className="flex items-center gap-2 text-sm opacity-90 mb-2">
                                 <span>{model.location}</span>
                                 {model.hasLocation && (
-                                  <span className="text-primary">✓</span>
+                                  <span className="text-primary">✓ Com local</span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-1 text-xs flex-wrap">
-                                <span className="px-1.5 py-0.5 bg-primary/20 border border-primary/30 rounded">
+                              <div className="flex items-center gap-2 text-xs flex-wrap">
+                                <span className="px-2 py-1 bg-primary/20 border border-primary/30 rounded">
                                   {model.age} anos
                                 </span>
-                                <span className="px-1.5 py-0.5 bg-gold/20 border border-gold/30 rounded capitalize text-gold">
+                                <span className="px-2 py-1 bg-gold/20 border border-gold/30 rounded capitalize text-gold">
                                   {model.category}
                                 </span>
                               </div>
                             </div>
                           </div>
-                          <div className="p-2 bg-white">
-                            <p className="text-xs text-gray-700 line-clamp-2 mb-1">
-                              {model.description}
-                            </p>
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-gold">{model.fee}</span>
-                              <span className="text-primary">Ver perfil →</span>
+                          
+                          {/* Informações detalhadas */}
+                          <div className="p-4 bg-white">
+                            <div className="space-y-3 mb-4">
+                              <div>
+                                <p className="text-sm text-gray-900 leading-relaxed mb-3">
+                                  {model.description}
+                                </p>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div>
+                                  <span className="text-gray-700 font-medium">Altura:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.height}m</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-700 font-medium">Manequim:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.size}</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-700 font-medium">Calçado:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.shoes}</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-700 font-medium">Quadril:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.hip} cm</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-700 font-medium">Olhos:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.eyeColor}</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-700 font-medium">Acompanha:</span>
+                                  <span className="ml-2 font-semibold text-gray-900">{model.accompanies.join(", ")}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="pt-3 border-t border-gray-200">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-gray-700 font-medium text-sm">Taxa:</span>
+                                  <span className="font-bold text-lg text-gold">{model.fee}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-gray-700 font-medium text-sm">Aceita Cartão:</span>
+                                  <span className={`font-semibold ${model.acceptsCard ? 'text-primary' : 'text-gray-600'}`}>
+                                    {model.acceptsCard ? 'Sim' : 'Não'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="pt-3 border-t border-gray-200">
+                              <div className="flex items-center justify-center">
+                                <span className="text-primary font-semibold text-sm">
+                                  Ver perfil completo →
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </Link>
-                      ))}
+                        {index === message.models.length - 1 && (
+                          <span className="text-xs text-gray-600 mt-2 block text-right">
+                            {new Date(message.timestamp).toLocaleTimeString('pt-BR', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-600 mt-2 block text-right">
-                      {new Date(message.timestamp).toLocaleTimeString('pt-BR', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </span>
                   </div>
-                </div>
+                ))}
               </div>
             );
           }
