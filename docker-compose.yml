@@ -22,12 +22,13 @@ services:
       - gwan
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`brazil-beauty.gwan.com.br`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=80"
-      - "traefik.http.middlewares.frontend-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.frontend.middlewares=frontend-headers"
+      - "traefik.http.routers.brazil-beauty.rule=Host(`brazil-beauty.gwan.com.br`)"
+      - "traefik.http.routers.brazil-beauty.entrypoints=websecure"
+      - "traefik.http.routers.brazil-beauty.tls.certresolver=letsencrypt"
+      - "traefik.http.services.brazil-beauty.loadbalancer.server.port=80"
+      - "traefik.http.routers.brazil-beauty.middlewares=brazil-beauty-headers"
+      - "traefik.http.middlewares.brazil-beauty-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.brazil-beauty-headers.headers.customrequestheaders.X-Forwarded-Port=443"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
