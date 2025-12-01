@@ -2,7 +2,8 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import modelsData from "@/shared/data/models.json";
+import { useModelById } from "@/presentation/hooks/useModelById";
+import { toast } from "sonner";
 import {
   MapPin,
   Phone,
@@ -16,9 +17,25 @@ import {
 
 const ModelProfile = () => {
   const { id } = useParams();
-  const model = modelsData.find((m) => m.id === id);
+  const { data: model, isLoading, isError, error } = useModelById(id);
 
-  if (!model) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
+        <Navbar />
+        <div className="pt-32 pb-20 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !model) {
+    toast.error("Erro ao carregar perfil da profissional");
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
         <Navbar />
@@ -26,6 +43,9 @@ const ModelProfile = () => {
           <h1 className="text-3xl font-serif font-bold mb-4">
             Perfil não encontrado
           </h1>
+          <p className="text-muted-foreground mb-4">
+            {error?.message || "A profissional solicitada não foi encontrada"}
+          </p>
           <Link to="/search">
             <Button>Voltar à busca</Button>
           </Link>
@@ -55,27 +75,37 @@ const ModelProfile = () => {
           <div className="grid lg:grid-cols-5 gap-8">
             {/* Photos */}
             <div className="lg:col-span-3 space-y-4">
-              <div className="aspect-[4/5] rounded-xl overflow-hidden glass-effect hover-glow">
-                <img
-                  src={model.photos[0]}
-                  alt={model.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {model.photos.slice(1).map((photo, index) => (
-                  <div
-                    key={index}
-                    className="aspect-square rounded-xl overflow-hidden glass-effect hover-lift"
-                  >
+              {model.photos && model.photos.length > 0 ? (
+                <>
+                  <div className="aspect-[4/5] rounded-xl overflow-hidden glass-effect hover-glow">
                     <img
-                      src={photo}
-                      alt={`${model.name} - ${index + 2}`}
+                      src={model.photos[0]}
+                      alt={model.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                ))}
-              </div>
+                  {model.photos.length > 1 && (
+                    <div className="grid grid-cols-2 gap-4">
+                      {model.photos.slice(1).map((photo, index) => (
+                        <div
+                          key={index}
+                          className="aspect-square rounded-xl overflow-hidden glass-effect hover-lift"
+                        >
+                          <img
+                            src={photo}
+                            alt={`${model.name} - ${index + 2}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="aspect-[4/5] rounded-xl overflow-hidden glass-effect flex items-center justify-center bg-muted">
+                  <p className="text-muted-foreground">Sem fotos disponíveis</p>
+                </div>
+              )}
             </div>
 
             {/* Info */}

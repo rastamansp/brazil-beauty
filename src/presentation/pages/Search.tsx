@@ -1,16 +1,46 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { ModelCard } from "@/presentation/components/ModelCard";
-import modelsData from "@/shared/data/models.json";
+import { useModels } from "@/presentation/hooks/useModels";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 
 const Search = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
 
-  const filteredModels =
-    selectedCategory === "todos"
-      ? modelsData
-      : modelsData.filter((model) => model.category === selectedCategory);
+  const filters = useMemo(() => {
+    if (selectedCategory === "todos") {
+      return undefined;
+    }
+    return { category: selectedCategory as "modelo" | "tradutora" | "massagista" };
+  }, [selectedCategory]);
+
+  const { data: allModels = [], isLoading, isError, error } = useModels();
+
+  const filteredModels = useMemo(() => {
+    if (selectedCategory === "todos") {
+      return allModels;
+    }
+    return allModels.filter((model) => model.category === selectedCategory);
+  }, [allModels, selectedCategory]);
+
+  const categoryModels = useMemo(() => {
+    const models: Record<string, typeof allModels> = {
+      modelo: [],
+      tradutora: [],
+      massagista: [],
+    };
+    allModels.forEach((model) => {
+      if (models[model.category]) {
+        models[model.category].push(model);
+      }
+    });
+    return models;
+  }, [allModels]);
+
+  if (isError) {
+    toast.error("Erro ao carregar profissionais. Tente novamente mais tarde.");
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
@@ -46,61 +76,82 @@ const Search = () => {
             </TabsList>
           </Tabs>
 
-          {/* Category Carousels */}
-          <div className="space-y-16">
-            {["modelo", "tradutora", "massagista"].map((category) => {
-              const categoryModels = modelsData.filter((m) => m.category === category);
-              const categoryName =
-                category === "modelo"
-                  ? "Modelos"
-                  : category === "tradutora"
-                  ? "Tradutoras"
-                  : "Massagistas";
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+            </div>
+          ) : isError ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">Erro ao carregar profissionais</p>
+              <p className="text-muted-foreground">{error?.message || "Tente novamente mais tarde"}</p>
+            </div>
+          ) : (
+            <>
+              {/* Category Carousels */}
+              <div className="space-y-16">
+                {["modelo", "tradutora", "massagista"].map((category) => {
+                  const models = categoryModels[category as keyof typeof categoryModels] || [];
+                  const categoryName =
+                    category === "modelo"
+                      ? "Modelos"
+                      : category === "tradutora"
+                      ? "Tradutoras"
+                      : "Massagistas";
 
-              return (
-                <div key={category} className="animate-fade-in">
-                  <h2 className="text-3xl font-serif font-bold mb-6 text-gradient">
-                    {categoryName}
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {categoryModels.map((model) => (
-                      <ModelCard
-                        key={model.id}
-                        id={model.id}
-                        name={model.name}
-                        location={model.location}
-                        hasLocation={model.hasLocation}
-                        age={model.age}
-                        photo={model.photos[0]}
-                        category={model.category}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  if (models.length === 0) return null;
+
+                  return (
+                    <div key={category} className="animate-fade-in">
+                      <h2 className="text-3xl font-serif font-bold mb-6 text-gradient">
+                        {categoryName}
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {models.map((model) => (
+                          <ModelCard
+                            key={model.id}
+                            id={model.id}
+                            name={model.name}
+                            location={model.location}
+                            hasLocation={model.hasLocation}
+                            age={model.age}
+                            photo={model.photos[0]}
+                            category={model.category}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           {/* All Models Grid */}
-          {selectedCategory === "todos" && (
+          {selectedCategory === "todos" && !isLoading && !isError && (
             <div className="mt-16">
               <h2 className="text-3xl font-serif font-bold mb-6 text-gradient">
                 Todas as Profissionais
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredModels.map((model) => (
-                  <ModelCard
-                    key={model.id}
-                    id={model.id}
-                    name={model.name}
-                    location={model.location}
-                    hasLocation={model.hasLocation}
-                    age={model.age}
-                    photo={model.photos[0]}
-                    category={model.category}
-                  />
-                ))}
-              </div>
+              {filteredModels.length === 0 ? (
+                <p className="text-center text-muted-foreground py-12">
+                  Nenhuma profissional encontrada
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredModels.map((model) => (
+                    <ModelCard
+                      key={model.id}
+                      id={model.id}
+                      name={model.name}
+                      location={model.location}
+                      hasLocation={model.hasLocation}
+                      age={model.age}
+                      photo={model.photos[0]}
+                      category={model.category}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 // Infrastructure
 import { Logger, ILogger } from '@infrastructure/logging/Logger';
 import { MentorRepository } from '@infrastructure/repositories/MentorRepository';
+import { ModelRepository } from '@infrastructure/repositories/ModelRepository';
 import { SessionRepository } from '@infrastructure/repositories/SessionRepository';
 import { AuthRepository } from '@infrastructure/repositories/AuthRepository';
 import { AvailabilityRepository } from '@infrastructure/repositories/AvailabilityRepository';
@@ -9,6 +10,9 @@ import { AvailabilityRepository } from '@infrastructure/repositories/Availabilit
 import { ListMentorsUseCase } from '@application/use-cases/mentors/ListMentors.usecase';
 import { GetMentorByIdUseCase } from '@application/use-cases/mentors/GetMentorById.usecase';
 import { SearchMentorsUseCase } from '@application/use-cases/mentors/SearchMentors.usecase';
+import { ListModelsUseCase } from '@application/use-cases/models/ListModels.usecase';
+import { GetModelByIdUseCase } from '@application/use-cases/models/GetModelById.usecase';
+import { SearchModelsUseCase } from '@application/use-cases/models/SearchModels.usecase';
 import { CreateSessionUseCase } from '@application/use-cases/sessions/CreateSession.usecase';
 import { ListUserSessionsUseCase } from '@application/use-cases/sessions/ListUserSessions.usecase';
 import { GetSessionByIdUseCase } from '@application/use-cases/sessions/GetSessionById.usecase';
@@ -21,6 +25,7 @@ class Container {
   // Infrastructure
   private _logger: ILogger | null = null;
   private _mentorRepository: MentorRepository | null = null;
+  private _modelRepository: ModelRepository | null = null;
   private _sessionRepository: SessionRepository | null = null;
   private _authRepository: AuthRepository | null = null;
   private _availabilityRepository: AvailabilityRepository | null = null;
@@ -29,6 +34,9 @@ class Container {
   private _listMentorsUseCase: ListMentorsUseCase | null = null;
   private _getMentorByIdUseCase: GetMentorByIdUseCase | null = null;
   private _searchMentorsUseCase: SearchMentorsUseCase | null = null;
+  private _listModelsUseCase: ListModelsUseCase | null = null;
+  private _getModelByIdUseCase: GetModelByIdUseCase | null = null;
+  private _searchModelsUseCase: SearchModelsUseCase | null = null;
   private _createSessionUseCase: CreateSessionUseCase | null = null;
   private _listUserSessionsUseCase: ListUserSessionsUseCase | null = null;
   private _getSessionByIdUseCase: GetSessionByIdUseCase | null = null;
@@ -50,6 +58,13 @@ class Container {
       this._mentorRepository = new MentorRepository(this.logger);
     }
     return this._mentorRepository;
+  }
+
+  get modelRepository(): ModelRepository {
+    if (!this._modelRepository) {
+      this._modelRepository = new ModelRepository(this.logger);
+    }
+    return this._modelRepository;
   }
 
   get sessionRepository(): SessionRepository {
@@ -93,6 +108,27 @@ class Container {
       this._searchMentorsUseCase = new SearchMentorsUseCase(this.mentorRepository);
     }
     return this._searchMentorsUseCase;
+  }
+
+  get listModelsUseCase(): ListModelsUseCase {
+    if (!this._listModelsUseCase) {
+      this._listModelsUseCase = new ListModelsUseCase(this.modelRepository);
+    }
+    return this._listModelsUseCase;
+  }
+
+  get getModelByIdUseCase(): GetModelByIdUseCase {
+    if (!this._getModelByIdUseCase) {
+      this._getModelByIdUseCase = new GetModelByIdUseCase(this.modelRepository);
+    }
+    return this._getModelByIdUseCase;
+  }
+
+  get searchModelsUseCase(): SearchModelsUseCase {
+    if (!this._searchModelsUseCase) {
+      this._searchModelsUseCase = new SearchModelsUseCase(this.modelRepository);
+    }
+    return this._searchModelsUseCase;
   }
 
   get createSessionUseCase(): CreateSessionUseCase {
