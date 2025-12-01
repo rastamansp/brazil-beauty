@@ -22,11 +22,19 @@ services:
       - gwan
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.brazil-beauty.rule=Host(`brazil-beauty.gwan.com.br`)"
-      - "traefik.http.routers.brazil-beauty.entrypoints=websecure"
-      - "traefik.http.routers.brazil-beauty.tls.certresolver=letsencrypt"
+      # Router HTTPS
+      - "traefik.http.routers.brazil-beauty-https.rule=Host(`brazil-beauty.gwan.com.br`)"
+      - "traefik.http.routers.brazil-beauty-https.entrypoints=websecure"
+      - "traefik.http.routers.brazil-beauty-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.brazil-beauty-https.service=brazil-beauty"
+      - "traefik.http.routers.brazil-beauty-https.middlewares=brazil-beauty-headers"
+      # Router HTTP
+      - "traefik.http.routers.brazil-beauty-http.rule=Host(`brazil-beauty.gwan.com.br`)"
+      - "traefik.http.routers.brazil-beauty-http.entrypoints=web"
+      - "traefik.http.routers.brazil-beauty-http.service=brazil-beauty"
+      # Service
       - "traefik.http.services.brazil-beauty.loadbalancer.server.port=80"
-      - "traefik.http.routers.brazil-beauty.middlewares=brazil-beauty-headers"
+      # Middleware para HTTPS
       - "traefik.http.middlewares.brazil-beauty-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.middlewares.brazil-beauty-headers.headers.customrequestheaders.X-Forwarded-Port=443"
     healthcheck:
