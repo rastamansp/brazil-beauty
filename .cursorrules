@@ -1,0 +1,499 @@
+# 🚀 Cursor Rules - Gwan Events Frontend
+
+## 📋 Visão Geral do Projeto
+
+Este é um projeto React + TypeScript + Vite que implementa o frontend da plataforma de eventos e venda de ingressos. O projeto segue os princípios de Clean Architecture, SOLID e melhores práticas de desenvolvimento frontend.
+
+## 🚫 **REGRAS CRÍTICAS - NUNCA VIOLAR**
+
+### ❌ **NUNCA desabilitar funcionalidades essenciais:**
+- ❌ **NUNCA** usar `any` type
+- ❌ **NUNCA** usar `console.log` (usar logger estruturado ou remover)
+- ❌ **NUNCA** remover validações de props
+- ❌ **NUNCA** desabilitar tratamento de erros
+- ❌ **NUNCA** remover interfaces ou tipos TypeScript
+- ❌ **NUNCA** fazer operações síncronas bloqueantes
+- ❌ **NUNCA** misturar lógica de negócio com componentes de UI
+- ❌ **NUNCA** usar `alert()` - sempre usar react-hot-toast
+
+### ✅ **SEMPRE corrigir problemas de configuração:**
+- ✅ **SEMPRE** verificar variáveis de ambiente
+- ✅ **SEMPRE** configurar APIs corretamente
+- ✅ **SEMPRE** implementar fallbacks e retry logic
+- ✅ **SEMPRE** usar logging estruturado para debug
+- ✅ **SEMPRE** seguir princípios de resiliência
+- ✅ **SEMPRE** usar react-hot-toast para notificações
+
+## 🏗️ Arquitetura e Padrões
+
+### Clean Architecture (Adaptada para Frontend)
+- **Entities**: Tipos e interfaces de domínio (src/domain/entities)
+- **Use Cases**: Casos de uso da aplicação (src/application/use-cases)
+- **Interface Adapters**: Services, API clients, Context providers (src/infrastructure)
+- **Frameworks & Drivers**: React, Vite, Tailwind, Axios (src/presentation)
+
+### SOLID Principles (Adaptados para Frontend)
+- **S**: Single Responsibility Principle (componentes com uma responsabilidade)
+- **O**: Open/Closed Principle (extensível via props, fechado para modificação)
+- **L**: Liskov Substitution Principle (componentes substituíveis)
+- **I**: Interface Segregation Principle (interfaces específicas)
+- **D**: Dependency Inversion Principle (depender de abstrações, não implementações)
+
+### Design Patterns
+- **Repository Pattern**: Para acesso a dados via services
+- **Factory Pattern**: Para criação de objetos complexos
+- **Observer Pattern**: Para gerenciamento de estado (Context API)
+- **Command Pattern**: Para ações do usuário
+- **Provider Pattern**: Para injeção de dependências
+- **Custom Hooks Pattern**: Para lógica de negócio reutilizável
+
+## 📁 Estrutura de Pastas (Clean Architecture)
+
+```
+src/
+├── domain/                      # Camada de Domínio
+│   ├── entities/               # Entidades de negócio
+│   ├── repositories/           # Interfaces dos repositórios
+│   └── errors/                 # Erros de domínio
+├── application/                # Camada de Aplicação
+│   ├── use-cases/             # Casos de uso
+│   ├── dto/                   # Data Transfer Objects
+│   └── validators/            # Validadores Zod
+├── infrastructure/             # Camada de Infraestrutura
+│   ├── repositories/          # Implementações dos repositórios
+│   ├── logging/               # Sistema de logging
+│   └── http/                  # Cliente HTTP
+├── presentation/              # Camada de Apresentação
+│   ├── hooks/                # Custom hooks
+│   ├── components/           # Componentes React
+│   ├── pages/               # Páginas da aplicação
+│   └── contexts/             # Contextos React
+├── shared/                   # Código compartilhado
+│   ├── di/                  # Container de injeção de dependências
+│   ├── constants/           # Constantes
+│   └── utils/               # Utilitários
+├── components/              # Componentes compartilhados globais
+├── contexts/                # Contextos globais
+├── App.tsx                  # Componente principal com Toaster
+├── main.tsx                 # Arquivo de entrada
+└── index.css                # Estilos globais
+```
+
+## 🔧 Padrões de Código
+
+### Nomenclatura
+- **Componentes**: PascalCase (ex: `EventCard`, `UserProfile`)
+- **Interfaces**: PascalCase com prefixo I (ex: `IEvent`, `IUser`) OU sem prefixo (ex: `EventCardProps`)
+- **Funções**: camelCase (ex: `handleSubmit`, `validateForm`)
+- **Variáveis**: camelCase (ex: `eventList`, `userData`)
+- **Constantes**: UPPER_SNAKE_CASE (ex: `API_BASE_URL`, `MAX_EVENTS`)
+- **Arquivos**: PascalCase para componentes, camelCase para outros (ex: `EventCard.tsx`, `apiService.ts`)
+- **Páginas**: Sufixo `.page.tsx` (ex: `Events.page.tsx`, `Login.page.tsx`)
+
+### Estrutura de Componentes
+```typescript
+import React from 'react'
+import { toast } from 'react-hot-toast'
+// Imports específicos depois dos genéricos
+
+interface IEventCardProps {
+  event: IEvent
+  onSelect?: (event: IEvent) => void
+  className?: string
+}
+
+export const EventCard: React.FC<IEventCardProps> = ({ 
+  event, 
+  onSelect, 
+  className 
+}) => {
+  // Hooks primeiro
+  const [isLoading, setIsLoading] = useState(false)
+  
+  // Handlers com useCallback
+  const handleClick = useCallback(() => {
+    onSelect?.(event)
+  }, [event, onSelect])
+  
+  // useEffects
+  useEffect(() => {
+    // efeitos
+  }, [])
+  
+  // Render
+  return (
+    <div className={className} onClick={handleClick}>
+      {/* JSX */}
+    </div>
+  )
+}
+```
+
+### Sistema de Notificações com react-hot-toast
+
+**SEMPRE use toast ao invés de alert():**
+```typescript
+import { toast } from 'react-hot-toast'
+
+// Sucesso
+toast.success('Operação realizada com sucesso!')
+
+// Erro
+toast.error('Erro ao realizar operação')
+
+// Aviso
+toast('Mensagem de aviso', { icon: '⚠️' })
+
+// Customizado
+toast((t) => (
+  <span>
+    Mensagem personalizada
+    <button onClick={() => toast.dismiss(t.id)}>Fechar</button>
+  </span>
+))
+```
+
+## 🎯 Padrões de Custom Hooks
+
+### Estrutura de Custom Hook
+```typescript
+import { useState, useCallback } from 'react'
+import { container } from '../../shared/di/container'
+import { ILogger } from '../../infrastructure/logging/ILogger'
+
+interface UseCustomHookResult {
+  data: any
+  loading: boolean
+  error: Error | null
+  refetch: () => Promise<void>
+}
+
+export const useCustomHook = (): UseCustomHookResult => {
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const logger: ILogger = container.logger
+  
+  const fetch = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const result = await container.repository.method()
+      setData(result)
+      
+      logger.info('Operation successful', { data: result })
+    } catch (err) {
+      setError(err as Error)
+      logger.error('Operation failed', err as Error)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [logger])
+  
+  useEffect(() => {
+    fetch()
+  }, [fetch])
+  
+  return {
+    data,
+    loading,
+    error,
+    refetch: fetch
+  }
+}
+```
+
+## 🔌 Padrões de Repository
+
+### Interface de Repository
+```typescript
+import { Entity } from '../entities/Entity.entity'
+
+export interface IRepository {
+  findAll(filters?: any): Promise<Entity[]>
+  findById(id: string): Promise<Entity | null>
+  create(data: CreateData): Promise<Entity>
+  update(id: string, data: UpdateData): Promise<Entity>
+  delete(id: string): Promise<void>
+}
+
+export interface CreateData {
+  // campos
+}
+
+export interface UpdateData extends Partial<CreateData> {}
+```
+
+### Implementação de Repository
+```typescript
+import { AxiosInstance } from 'axios'
+import { IRepository } from './IRepository'
+import { Entity } from '../entities/Entity.entity'
+import { NetworkError, NotFoundError } from '../../domain/errors/DomainError'
+import axios from 'axios'
+
+export class EntityRepository implements IRepository {
+  constructor(private readonly httpClient: AxiosInstance) {}
+  
+  async findAll(filters?: any): Promise<Entity[]> {
+    try {
+      const response = await this.httpClient.get('/entities', { params: filters })
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new NetworkError(`Failed to fetch entities: ${error.message}`, error)
+      }
+      throw error
+    }
+  }
+  
+  // Outros métodos seguindo mesmo padrão...
+}
+```
+
+## 🎨 Padrões de Páginas
+
+### Estrutura de Página
+```typescript
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { useCustomHook } from '../hooks/useCustomHook'
+// Outros imports
+
+export const EntityPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { data, loading, error } = useCustomHook()
+  
+  // Estados
+  const [formData, setFormData] = useState<FormDataType>({
+    // campos
+  })
+  
+  // Handlers
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      // operação
+      toast.success('Operação realizada com sucesso!')
+      navigate('/next-page')
+    } catch (err) {
+      toast.error('Erro ao realizar operação')
+    }
+  }
+  
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+  
+  // Error state
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">{error.message}</p>
+      </div>
+    )
+  }
+  
+  // Render
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Conteúdo */}
+    </div>
+  )
+}
+```
+
+## 📝 Padrões de Validação
+
+### Validação com Zod
+```typescript
+import { z } from 'zod'
+
+export const EntitySchema = z.object({
+  title: z.string().min(3, 'Título deve ter no mínimo 3 caracteres').max(200),
+  description: z.string().min(10, 'Descrição deve ter no mínimo 10 caracteres'),
+  price: z.number().positive('Preço deve ser positivo'),
+})
+
+export type Entity = z.infer<typeof EntitySchema>
+
+// Uso em formulários
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { name, value } = e.target
+  setFormData(prev => ({
+    ...prev,
+    [name]: name === 'price' ? parseFloat(value) || 0 : value
+  }))
+  
+  // Limpar erro ao mudar
+  if (errors[name]) {
+    setErrors(prev => {
+      const newErrors = { ...prev }
+      delete newErrors[name]
+      return newErrors
+    })
+  }
+}
+
+const validateForm = (): boolean => {
+  const newErrors: Record<string, string> = {}
+  
+  if (!formData.title.trim()) {
+    newErrors.title = 'Título é obrigatório'
+  }
+  
+  setErrors(newErrors)
+  return Object.keys(newErrors).length === 0
+}
+```
+
+### Máscara de CPF
+```typescript
+const applyCPFMask = (value: string): string => {
+  const cleaned = value.replace(/\D/g, '')
+  if (cleaned.length <= 11) {
+    return cleaned
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+  }
+  return value
+}
+```
+
+## 🎨 Padrões de UI com react-hot-toast
+
+### Configuração Global
+```typescript
+// No App.tsx
+import { Toaster } from 'react-hot-toast'
+
+<Toaster
+  position="top-right"
+  toastOptions={{
+    duration: 4000,
+    style: {
+      background: '#363636',
+      color: '#fff',
+    },
+    success: {
+      duration: 3000,
+      iconTheme: {
+        primary: '#10b981',
+        secondary: '#fff',
+      },
+    },
+    error: {
+      duration: 4000,
+      iconTheme: {
+        primary: '#ef4444',
+        secondary: '#fff',
+      },
+    },
+  }}
+/>
+```
+
+## 🔄 Clean Architecture - Camadas
+
+### Domain (Domínio)
+- **Responsabilidade**: Entidades e regras de negócio
+- **Não depende de**: Camadas externas
+- **Exemplo**: `Event.entity.ts`, `IEventRepository.ts`
+
+### Application (Aplicação)
+- **Responsabilidade**: Casos de uso e DTOs
+- **Depende de**: Domain
+- **Exemplo**: `CreateEvent.usecase.ts`, `CreateEventDto.ts`
+
+### Infrastructure (Infraestrutura)
+- **Responsabilidade**: Implementações concretas
+- **Depende de**: Domain
+- **Exemplo**: `EventRepository.ts`, `AuthRepository.ts`
+
+### Presentation (Apresentação)
+- **Responsabilidade**: UI e interação com usuário
+- **Depende de**: Application e Infrastructure
+- **Exemplo**: `Events.page.tsx`, `useEvents.ts`
+
+## 🚫 O que NUNCA fazer
+
+- ❌ **NUNCA** usar `any` type - sempre tipar corretamente
+- ❌ **NUNCA** usar `console.log` - usar logger estruturado
+- ❌ **NUNCA** usar `alert()` - usar react-hot-toast
+- ❌ **NUNCA** deixar props sem validação
+- ❌ **NUNCA** misturar lógica de negócio com UI
+- ❌ **NUNCA** usar `var` (sempre `const` ou `let`)
+- ❌ **NUNCA** fazer operações síncronas bloqueantes
+- ❌ **NUNCA** esquecer de tratar erros
+- ❌ **NUNCA** usar variáveis globais
+- ❌ **NUNCA** criar componentes muito grandes (>400 linhas)
+- ❌ **NUNCA** usar `useEffect` sem dependências corretas
+- ❌ **NUNCA** remover validações existentes
+- ❌ **NUNCA** desabilitar tratamento de erros
+
+## ✅ O que SEMPRE fazer
+
+- ✅ Usar TypeScript strict mode
+- ✅ Definir interfaces para todas as props
+- ✅ Usar hooks apropriadamente (useState, useEffect, useCallback, useMemo)
+- ✅ Validar entrada de dados com Zod
+- ✅ Tratar erros adequadamente com try/catch
+- ✅ Usar react-hot-toast para notificações
+- ✅ Usar logs estruturados (container.logger)
+- ✅ Seguir princípios SOLID
+- ✅ Implementar Clean Architecture
+- ✅ Usar React.memo quando apropriado
+- ✅ Usar useCallback e useMemo quando necessário
+- ✅ Separar lógica de negócio de UI
+- ✅ Criar custom hooks para lógica reutilizável
+- ✅ Organizar imports: React → Third-party → Internal
+- ✅ Usar sufixo `.page.tsx` para páginas
+- ✅ Usar PascalCase para componentes e interfaces
+
+## 🔄 Fluxo de Desenvolvimento
+
+1. **Definir Interface** - Como o componente se comunica
+2. **Criar Componente** - Implementação seguindo os padrões
+3. **Adicionar Hooks** - Lógica de estado e efeitos
+4. **Validar Props** - Verificar entrada de dados com Zod
+5. **Tratar Erros** - Implementar tratamento adequado
+6. **Notificações** - Usar react-hot-toast ao invés de alert
+7. **Testar** - Componente funciona corretamente
+8. **Otimizar** - Performance quando necessário
+
+## 📚 Bibliotecas e Ferramentas
+
+### Principais
+- **React 18**: Biblioteca UI
+- **TypeScript**: Tipagem estática
+- **Vite**: Build tool
+- **React Router**: Roteamento
+- **Tailwind CSS**: Estilização
+- **Axios**: Cliente HTTP
+- **react-hot-toast**: Sistema de notificações
+- **Zod**: Validação de esquemas
+- **date-fns**: Manipulação de datas
+- **Lucide React**: Ícones
+- **React Hook Form**: Formulários
+
+### Arquitetura
+- Clean Architecture adaptada para frontend
+- SOLID Principles
+- Repository Pattern
+- Dependency Injection
+- Custom Hooks Pattern
+
+---
+
+**Lembre-se**: Este arquivo define os padrões do projeto frontend. Sempre consulte antes de implementar novas funcionalidades para garantir consistência e qualidade do código. **NUNCA desabilite funcionalidades essenciais - sempre corrija os problemas de configuração!**

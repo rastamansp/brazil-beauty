@@ -1,0 +1,68 @@
+{
+  "journey": [
+    {
+      "name": "1 - Descoberta",
+      "description": "Primeiro contato e entendimento dos objetivos do usuário",
+      "messages": [
+        { "from": "user", "text": "Oi, tudo bem? Vi o Brasil Beauty no Instagram e queria entender melhor como funciona." },
+        { "from": "concierge", "text": "Olá! Seja muito bem-vindo ao Brasil Beauty. 😊\n\nÉ um prazer enorme falar com você.\n\nAqui nós conectamos você com profissionais premium de alta qualidade para momentos especiais. Trabalhamos com modelos, tradutoras e massagistas selecionadas.\n\nPara deixar sua experiência mais personalizada, posso saber seu nome?" },
+        { "from": "user", "text": "Claro, meu nome é Pedro." },
+        { "from": "concierge", "text": "Ótimo, Pedro. Obrigado pela confiança.\n\nFico feliz que tenha nos procurado — muitas pessoas chegam até nós buscando profissionais premium.\n\nPara começarmos, me diga: o que você busca hoje?\n\nVocê prefere conhecer:\n\n1️⃣ Nossas categorias de profissionais,\n\n2️⃣ Nossas profissionais disponíveis,\n\n3️⃣ Ou prefere que eu te ajude a entender qual serviço você precisa?" },
+        { "from": "user", "text": "Acho que preciso de ajuda para entender qual profissional preciso." },
+        { "from": "concierge", "text": "Perfeito, Pedro.\n\nIsso é mais comum do que imagina — e é exatamente por isso que existe o Brasil Beauty.\n\nQuando converso com pessoas que buscam profissionais premium, normalmente os objetivos caem em uma destas categorias:\n\n• Acompanhamento para eventos e jantares\n• Serviços de tradução para eventos corporativos\n• Massagens e relaxamento\n• Companhia para viagens\n• Eventos sociais e festas\n• Atendimento personalizado e discreto\n\nAlgum desses te representa hoje?" },
+        { "from": "user", "text": "Sim, preciso de acompanhamento para um evento. Quero uma profissional elegante." },
+        { "from": "concierge", "text": "Excelente, Pedro. Já estamos no caminho certo.\n\nCom base nisso, posso montar uma recomendação personalizada envolvendo a categoria ideal e uma profissional perfeita para te ajudar.\n\nQuer que eu faça isso?" },
+        { "from": "user", "text": "Sim, por favor." }
+      ]
+    },
+    {
+      "name": "2 - Recomendação de Profissional",
+      "description": "Apresentação da profissional recomendada",
+      "messages": [
+        { "from": "concierge", "text": "Pedro, analisei sua necessidade de acompanhamento para evento.\n\nCom isso, recomendo a seguinte profissional:\n\n🔹 Categoria recomendada:\n\nModelo - Acompanhante de Luxo\n\n✔ Elegante e sofisticada\n✔ Experiência em eventos sociais\n✔ Discreta e profissional\n✔ Disponível para eventos e jantares\n\n🔹 Profissional sugerida:\n\nUma modelo com experiência em eventos corporativos, jantares de negócios e ocasiões especiais. Elegante, discreta e com excelente comunicação.\n\nEssa categoria costuma atender perfeitamente suas necessidades porque concentra o serviço nas suas especificidades.\n\nVocê gostaria de conhecer mais sobre essa profissional?" },
+        { "from": "user", "text": "Sim, quero esse mesmo." },
+        { "from": "concierge", "text": "Excelente escolha.\n\nVou te acompanhar em todo o processo até o contato com a profissional." }
+      ]
+    },
+    {
+      "name": "3 - Agendamento",
+      "description": "Processo de contato e agendamento",
+      "messages": [
+        { "from": "concierge", "text": "Para entrarmos em contato com a profissional, preciso apenas que você me envie 2 ou 3 janelas de horário que funcionem para você.\n\nPode ser no formato:\n\n\"Terça à noite\"\n\n\"Quarta das 18h às 21h\"\n\n\"Sábado pela manhã\"\n\nO que funcionar melhor pra você." },
+        { "from": "user", "text": "Pode ser:\n\nAmanhã entre 18h e 20h\n\nQuinta das 19h às 21h\n\nSábado das 9h às 12h" },
+        { "from": "concierge", "text": "Obrigado pelas opções, Pedro.\n\nVou consultar a disponibilidade da profissional agora mesmo." },
+        { "from": "concierge", "text": "⏳ 3 minutos depois\n\nPerfeito, boa notícia: ela está disponível amanhã às 19h.\n\nDeseja confirmar esse horário?" },
+        { "from": "user", "text": "Sim, pode confirmar." },
+        { "from": "concierge", "text": "Ótimo, contato confirmado. ✔️\n\nAqui está o WhatsApp da profissional:\n\n🔗 https://wa.me/5511999999999\n\nE também já enviei para o seu e-mail os detalhes do contato.\n\nSe precisar de mais informações, é só me chamar por aqui. Estou à disposição." }
+      ]
+    },
+    {
+      "name": "4 - Pós-Evento",
+      "description": "Feedback após o evento",
+      "messages": [
+        { "from": "user", "text": "Acabei de finalizar o evento. Gostei muito da profissional, obrigado!" },
+        { "from": "concierge", "text": "Que ótimo saber disso, Pedro!\n\nFico realmente feliz que sua experiência tenha sido positiva — nosso objetivo é proporcionar momentos especiais, e nosso time está aqui para te dar todo o suporte.\n\nSe precisar de mais alguma coisa ou quiser conhecer outras profissionais, é só me chamar.\n\nEstou sempre à disposição. 😉" }
+      ]
+    },
+    {
+      "name": "5 - Recomendações",
+      "description": "Recomendações e próximos passos",
+      "messages": [
+        { "from": "concierge", "text": "Pedro, que bom que tudo correu bem!\n\nSe você precisar de mais algum serviço, aqui estão algumas recomendações:\n\n📘 SERVIÇOS DISPONÍVEIS\n\n• Modelos para eventos e jantares\n• Tradutoras para eventos corporativos\n• Massagistas para relaxamento\n• Acompanhamento para viagens\n• Eventos sociais e festas\n\nTodas as profissionais são selecionadas e verificadas para garantir qualidade e discrição." },
+        { "from": "concierge", "text": "📝 PRÓXIMOS PASSOS\n\n1️⃣ Se precisar de outro serviço, é só me avisar\n\n2️⃣ Você pode explorar outras categorias na plataforma\n\n3️⃣ Todas as profissionais têm perfis completos com fotos e informações\n\n4️⃣ O contato é direto via WhatsApp para maior agilidade\n\n5️⃣ Estamos sempre disponíveis para ajudar" },
+        { "from": "concierge", "text": "🎯 SUGESTÃO\n\nSe quiser, posso te ajudar a encontrar outras profissionais para futuros eventos ou necessidades.\n\nDeseja que eu mostre outras opções disponíveis?" }
+      ]
+    },
+    {
+      "name": "6 - Continuidade",
+      "description": "Agradecimento e próximos contatos",
+      "messages": [
+        { "from": "user", "text": "John, muito obrigado por tudo. A profissional foi excelente e o atendimento também." },
+        { "from": "concierge", "text": "Eu que agradeço, Pedro.\n\nFico muito feliz em ver sua satisfação — isso faz toda diferença para nós.\n\nVocê já quer conhecer outras profissionais, ou prefere manter o contato para futuras necessidades?" },
+        { "from": "user", "text": "Podemos já ver outras opções." },
+        { "from": "concierge", "text": "Perfeito!\n\nVocê pode explorar todas as categorias na plataforma ou me dizer o que precisa e eu recomendo.\n\nSerá um prazer continuar te ajudando 🙌" }
+      ]
+    }
+  ]
+}
+
